@@ -1,17 +1,20 @@
 package net.squidmonkey.tictactoe;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ttt extends Activity {
-    private int[][] board = new int[][]{{1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
-    private TextView message = (TextView)findViewById(R.id.message);
+    private int[][] board = new int[][]{{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+    private TextView message;
+    private Button button;
     private int xwin = -1; // -1 if no winning row
     private int owin = -1;  // -1 is no winning row
-    private int move = 0; //0 is x's turn, 1 is y's turn
+    private int move = 0; //even is x's turn, y is y's turn
 
     /* x = 3, o = 4 so that the sums don't give false wins
 
@@ -22,13 +25,20 @@ public class ttt extends Activity {
                        3  4  5  6
      */
 
+    private void showToast(String text) {
+        //DEBUGGING TOAST MESSAGES
+        Context context = getApplicationContext();
+        Toast toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
+        toast.show();
+        //END DEBUGGING
+    }
     private void checkForWin() {
 
         //check for horizontal wins
         for (int i = 0; i < 3; i++) {
             if (board[i][0] + board[i][1] + board[i][2] == 9)
                 xwin = i;
-            if (board[i][0] + board[i][0] + board[i][0] == 12)
+            if (board[i][0] + board[i][1] + board[i][2] == 12)
                 owin = i;
         }
 
@@ -37,7 +47,7 @@ public class ttt extends Activity {
             if (board[0][i] + board[1][i] + board[2][i] == 9)
                 xwin = i + 3;
             if (board[0][i] + board[1][i] + board[2][i] == 12)
-                xwin = i + 3;
+                owin = i + 3;
         }
 
         //check for diagonal wins
@@ -45,42 +55,67 @@ public class ttt extends Activity {
             xwin = 6;
         if (board[0][0] + board[1][1] + board[2][2] == 12)
             owin = 6;
-        if (board[0][2] + board[1][1] + board[0][2] == 9)
-            xwin = 6;
-        if (board[0][2] + board[1][1] + board[0][2] == 12)
-            owin = 6;
+        if (board[0][2] + board[1][1] + board[2][0] == 9)
+            xwin = 7;
+        if (board[0][2] + board[1][1] + board[2][0] == 12)
+            owin = 7;
 
         //if x won
-        if (xwin != -1)
+        if (xwin != -1)    {
             showWinner(xwin, "X");
-        if (owin != -1)
+            showToast(Integer.toString(xwin));
+        }
+
+        if (owin != -1){
             showWinner(owin, "O");
+            showToast(Integer.toString(owin));
+        }
 
         //else show other's turn
-        if(move == 0)
+        if(move % 2 == 0)
             message.setText("X's turn");
         else
-            message.setText("Y's turn");
+            message.setText("O's turn");
     }
 
     private void showWinner(int winningRow, String winner) {
         message.setText(winner + " wins on row " + winningRow + "!!!");
-    }
+        showToast(winner + " won!");
 
+        button = (Button)findViewById(R.id.button00);
+        button.setEnabled(false);
+        button = (Button)findViewById(R.id.button01);
+        button.setEnabled(false);
+        button = (Button)findViewById(R.id.button02);
+        button.setEnabled(false);
+        button = (Button)findViewById(R.id.button10);
+        button.setEnabled(false);
+        button = (Button)findViewById(R.id.button11);
+        button.setEnabled(false);
+        button = (Button)findViewById(R.id.button12);
+        button.setEnabled(false);
+        button = (Button)findViewById(R.id.button20);
+        button.setEnabled(false);
+        button = (Button)findViewById(R.id.button21);
+        button.setEnabled(false);
+        button = (Button)findViewById(R.id.button22);
+        button.setEnabled(false);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
+        message = (TextView)findViewById(R.id.message);
     }
 
     public void move(View view) {
-        Button button = (Button)findViewById(view.getId());
-        if (move ==0) {
+        button = (Button)findViewById(view.getId());
+        button.setEnabled(false);
+        if (move % 2 == 0) {
 
             button.setText("X");
-            move =1;
+            move++;
 
             switch(view.getId()) {
                 case R.id.button00:
@@ -115,7 +150,7 @@ public class ttt extends Activity {
         }
 
         else {
-            move = 0;
+            move++;
             button.setText("O");
 
             switch(view.getId()) {
@@ -149,6 +184,5 @@ public class ttt extends Activity {
             }
         }
        checkForWin();
-
     }
 }
