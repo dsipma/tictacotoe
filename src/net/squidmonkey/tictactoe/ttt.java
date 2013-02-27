@@ -70,12 +70,13 @@ public class ttt extends Activity {
             showWinner(owin, "O");
             showToast(Integer.toString(owin));
         }
-
+        else{
         //else show other's turn
         if(move % 2 == 0)
             message.setText("X's turn");
         else
             message.setText("O's turn");
+        }
     }
 
     private void showWinner(int winningRow, String winner) {
